@@ -115,22 +115,26 @@ The fully combined dataset (prob2_df) combines all this information on a monthly
 # Problem 3 - Popular Baby Names, NYC
 ```{r}
 pop_baby_names = read_csv(file = "./Popular_Baby_Names.csv") %>% 
-  mutate_all(.funs=tolower) %>% 
+  mutate_all(.funs=toupper) %>% 
   janitor::clean_names() %>% 
   distinct()
 pop_baby_names$ethnicity[pop_baby_names$ethnicity=="ASIAN AND PACI"] <- "ASIAN AND PACIFIC ISLANDER" 
 pop_baby_names$ethnicity[pop_baby_names$ethnicity=="BLACK NON HISP"] <- "BLACK NON HISPANIC"
 pop_baby_names$ethnicity[pop_baby_names$ethnicity=="WHITE NON HISP"] <- "WHITE NON HISPANIC"
-pop_baby_names 
-
 
 pop_baby_names %>% 
   group_by(ethnicity) %>% 
   summarize(n=n())
 
 pop_baby_names %>% 
-  group_by(gender) %>% 
-  summarize(n=n())
+  group_by(year_of_birth) %>% 
+  filter(childs_first_name == "OLIVIA") %>% 
+  select(-gender, -count, -childs_first_name) %>% 
+  pivot_wider(
+    names_from = year_of_birth,
+    values_from = rank
+  )
+  
 ```
 
 
