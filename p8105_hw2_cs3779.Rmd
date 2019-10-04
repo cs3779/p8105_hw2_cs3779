@@ -55,3 +55,13 @@ The Mr. Trash Wheel data set has `r nrow(mr_trash_wheel)` observations from 2014
 
 In Baltimore, from 2017 to 2018, there was a total of `r sum(prcp_data$Total)` rain, with `r sum(prcp_2017$Total)` inches of rain in 2017 and `r sum(prcp_2018$Total)` inches of rain in 2018. The average amount of rain for 2017 and 2018 is `r round(mean(prcp_2017$Total),2)` & `r round(mean(prcp_2018$Total),2)`, repectively. 
 
+
+# Problem 2 - FiveThirtyEight Dataset
+```{r}
+pols_month = read_csv(file = "./fivethirtyeight_datasets/pols_month.csv")
+```
+
+
+
+
+
