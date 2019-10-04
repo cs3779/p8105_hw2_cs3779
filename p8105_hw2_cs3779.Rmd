@@ -125,7 +125,10 @@ pop_baby_names$ethnicity[pop_baby_names$ethnicity=="WHITE NON HISP"] <- "WHITE N
 pop_baby_names %>% 
   group_by(ethnicity) %>% 
   summarize(n=n())
+```
 
+## Table of "Olivia" name popularity ranking over time by ethnicity
+```{r}
 pop_baby_names %>% 
   group_by(year_of_birth) %>% 
   filter(childs_first_name == "OLIVIA") %>% 
@@ -134,7 +137,18 @@ pop_baby_names %>%
     names_from = year_of_birth,
     values_from = rank
   )
-  
+```
+
+## Scatterplot of Name Popularity Ranking Amongst Non-Hispanic Whites
+```{r}
+male_2016_plot = pop_baby_names %>% 
+  group_by(year_of_birth) %>% 
+  filter(year_of_birth==2016,gender=="MALE",ethnicity=="WHITE NON HISPANIC") %>% 
+  select (-gender, -ethnicity)
+
+male_2016_plot %>% 
+  ggplot(aes(x=rank, y=count)) +
+    geom_point()
 ```
 
 
