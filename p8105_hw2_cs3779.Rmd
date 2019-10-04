@@ -139,6 +139,18 @@ pop_baby_names %>%
   )
 ```
 
+## Table of Most Popular Names for Male Children
+```{r}
+pop_baby_names %>% 
+  group_by(year_of_birth) %>% 
+  filter(gender=="MALE", rank==1) %>% 
+  select(-count, -gender, -rank) %>% 
+  pivot_wider(
+    names_from = year_of_birth,
+    values_from = childs_first_name
+  )
+```
+
 ## Scatterplot of Name Popularity Ranking Amongst Non-Hispanic Whites
 ```{r}
 male_2016_plot = pop_baby_names %>% 
