@@ -160,7 +160,12 @@ male_2016_plot = pop_baby_names %>%
 
 male_2016_plot %>% 
   ggplot(aes(x=rank, y=count)) +
-    geom_point()
+    geom_point() +
+  labs(
+    title = "Popular Male Names from 2016",
+    x = "Ranking of Name by Populatiry",
+    y = "Number of Children with Name"
+  )
 ```
 
 
