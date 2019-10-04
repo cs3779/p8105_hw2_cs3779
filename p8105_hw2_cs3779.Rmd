@@ -9,6 +9,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readxl)
+library(dplyr)
 options(scipen=999)
 ```
 
@@ -58,9 +59,64 @@ In Baltimore, from 2017 to 2018, there was a total of `r sum(prcp_data$Total)` r
 
 # Problem 2 - FiveThirtyEight Dataset
 ```{r}
-pols_month = read_csv(file = "./fivethirtyeight_datasets/pols_month.csv")
+pols_month = read_csv(file = "./fivethirtyeight_datasets/pols-month.csv") %>% 
+  separate(
+    mon, into=c("year", "month", "day"), sep = "-",
+  ) %>% 
+  mutate (
+    month = as.numeric(month),
+    month = month.name[month],
+    president = prez_gop - prez_dem,
+    president = as.character(president),
+    president = factor(president, c(1, -1), labels=c("gop", "dem"))
+  ) %>% 
+  select (-day, -prez_gop, -prez_dem)
+
+snp = read_csv(file = "./fivethirtyeight_datasets/snp.csv") %>% 
+  separate(
+    date, into=c("month", "day", "year"), sep = "/",
+  ) %>% 
+  mutate(
+    month = as.numeric(month),
+    month = month.name[month],
+  ) %>% 
+  select (year, month, close) 
+
+unemployment = read_csv(file = "./fivethirtyeight_datasets/unemployment.csv") %>% 
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month",
+    values_to = "unemployment"
+  ) %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    year = as.character(816)
+  )
+month.numbers <- match(unemployment$month,month.abb)
+unemployment = mutate(unemployment, month = month.name[month.numbers])
 ```
 
+## Joining Datasets
+```{r}
+prob2_df = left_join(pols_month, snp, by=c("year","month"))
+
+prob2_df = left_join(prob2_df, unemployment, by=c("year","month"))
+```
+
+The _pols_month_ dataset contained information on the number of senators and house representatives there were for each political party for each month of each year from 1947 until 2015. Additionally, it provided information on the political affilition of the President at that time. 
+
+The _snp_ dataset was also broken down by month and years. However, this information only ranged from 1950 to 2015. It contained information on the closing values of S&P stock index for the associated data. This ranged from 17.05 to 2107.39
+
+The _unemployment_ dataset also ranged from 1947 to 2015, and it provided the percentage of unemployment for any particular month of any particular year. There were 6 months in which data was unavialable, but the average percentage employment for the span of this time span is `r  mean(unemployment$unemployment, na.rm=TRUE)`, with the lowest unemployment being `r min(unemployment$unemployment, na.rm=TRUE)` during May-June 1953, and the highest unemployment being `r max (unemployment$unemployment, na.rm=TRUE)` during November-December 1982.
+
+The fully combined dataset (prob2_df) combines all this information on a monthly/yearly basis. So the entire dataset ranges from 1947 to 2015 and provides information on the number of Senators and House Representatives, as well as the associated stock index and unemployment.
+
+
+# Problem 3 - Popular Baby Names, NYC
+```{r}
+pop_baby_names = read_csv(file = "./Popular_Baby_Names.csv") %>% 
+  janitor::clean_names()
+```
 
 
 
