@@ -9,6 +9,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readxl)
+options(scipen=999)
 ```
 
 # Problem 1 - Mr. Trash Wheel
@@ -18,10 +19,39 @@ mr_trash_wheel = read_excel(
   sheet="Mr. Trash Wheel",
   range = cell_limits(ul=c(2,NA),lr=c(406,14))
   ) %>% 
-   janitor::clean_names() %>% 
+  drop_na() %>% 
+  janitor::clean_names() %>% 
   mutate (
-    sports_balls = as.integer(round(sports_balls))
+    sports_balls = as.integer(round(sports_balls)),
+    plastic_bottles = round(plastic_bottles),
+    plastic_bottles = round(glass_bottles),
+    homes_powered = round(homes_powered)
   )
 ```
 
+## Importing Precipitation Datasets 
+```{r}
+prcp_2017 = read_excel(
+  "./Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+  sheet="2017 Precipitation",
+  range = "A2:B14",
+) 
+year <- 2017
+prcp_2017$Year <- year
+
+prcp_2018 = read_excel(
+  "./Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+  sheet="2018 Precipitation",
+  range = "A2:B14",
+) 
+year2 <- 2018
+prcp_2018$Year <- year2
+
+prcp_data = full_join(prcp_2017,prcp_2018,by=NULL)
+prcp_data$Month<-month.name
+```
+
+The Mr. Trash Wheel data set has `r nrow(mr_trash_wheel)` observations from 2014 to 2019. Through these 5 years of debris clean-up, Mr. Trash Wheel has collected over `r sum(mr_trash_wheel$weight_tons)` tons of trash. This includes `r sum(mr_trash_wheel$plastic_bottles)` of plastic bottles, `r sum(mr_trash_wheel$glass_bottles)` of glass bottles, `r sum(mr_trash_wheel$grocery_bags)` of grocery bags, and even `r sum(mr_trash_wheel$sports_balls)` of sports balls, with the median number sports balls is over this time period being 8. 
+
+In Baltimore, from 2017 to 2018, there was a total of `r sum(prcp_data$Total)` rain, with `r sum(prcp_2017$Total)` inches of rain in 2017 and `r sum(prcp_2018$Total)` inches of rain in 2018. The average amount of rain for 2017 and 2018 is `r round(mean(prcp_2017$Total),2)` & `r round(mean(prcp_2018$Total),2)`, repectively. 
 
